@@ -7,13 +7,38 @@ import {
   CRow,
   CTable,
   CTableBody,
-  CTableCaption,
   CTableDataCell,
   CTableHead,
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-import { DocsExample } from 'src/components'
+import { db } from '../../../data/db'
+import './styles.css' // Import your CSS file
+
+const calculateAge = (birthDate) => {
+  const today = new Date()
+  const birthDateObj = new Date(birthDate)
+  let age = today.getFullYear() - birthDateObj.getFullYear()
+  const monthDifference = today.getMonth() - birthDateObj.getMonth()
+
+  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDateObj.getDate())) {
+    age--
+  }
+
+  return age
+}
+
+const getAgeColor = (age) => {
+  if (age < 13) {
+    return '#ffcccc' // Light red
+  } else if (age < 20) {
+    return '#ffeb99' // Light yellow
+  } else if (age < 65) {
+    return '#ccffcc' // Light green
+  } else {
+    return '#ccccff' // Light blue
+  }
+}
 
 const UsersList = () => {
   return (
@@ -28,29 +53,30 @@ const UsersList = () => {
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Age</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">Avatar</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                <CTableRow>
-                  <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                  <CTableDataCell>Mark</CTableDataCell>
-                  <CTableDataCell>Otto</CTableDataCell>
-                  <CTableDataCell>@mdo</CTableDataCell>
-                </CTableRow>
-                <CTableRow>
-                  <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                  <CTableDataCell>Jacob</CTableDataCell>
-                  <CTableDataCell>Thornton</CTableDataCell>
-                  <CTableDataCell>@fat</CTableDataCell>
-                </CTableRow>
-                <CTableRow>
-                  <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                  <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                  <CTableDataCell>@twitter</CTableDataCell>
-                </CTableRow>
+                {db.map((user, index) => {
+                  const age = calculateAge(user.birthday)
+                  const rowColor = getAgeColor(age)
+                  return (
+                    <CTableRow key={user.id} style={{ backgroundColor: rowColor }}>
+                      <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                      <CTableDataCell>{`${user.firstName} ${user.lastName}`}</CTableDataCell>
+                      <CTableDataCell>{age}</CTableDataCell>
+                      <CTableDataCell>
+                        <img
+                          src={`/src/assets/images/iam/${user.image}.jpg`}
+                          alt={`${user.firstName} ${user.lastName}`}
+                          style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                        />
+                      </CTableDataCell>
+                    </CTableRow>
+                  )
+                })}
               </CTableBody>
             </CTable>
           </CCardBody>
