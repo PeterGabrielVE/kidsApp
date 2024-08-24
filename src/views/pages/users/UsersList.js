@@ -40,6 +40,15 @@ const getAgeColor = (age) => {
   }
 }
 
+const formatDate = (dateString) => {
+  const dateObj = new Date(dateString)
+  const day = String(dateObj.getDate()).padStart(2, '0')
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+  const year = dateObj.getFullYear()
+
+  return `${day}/${month}/${year}`
+}
+
 const UsersList = () => {
   return (
     <CRow>
@@ -55,6 +64,7 @@ const UsersList = () => {
                   <CTableHeaderCell scope="col">#</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Name</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Age</CTableHeaderCell>
+                  <CTableHeaderCell scope="col">BirthDate</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Avatar</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
@@ -62,11 +72,13 @@ const UsersList = () => {
                 {db.map((user, index) => {
                   const age = calculateAge(user.birthday)
                   const rowColor = getAgeColor(age)
+                  const birthday = formatDate(user.birthday)
                   return (
                     <CTableRow key={user.id} style={{ backgroundColor: rowColor }}>
                       <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                       <CTableDataCell>{`${user.firstName} ${user.lastName}`}</CTableDataCell>
                       <CTableDataCell>{age}</CTableDataCell>
+                      <CTableDataCell>{birthday}</CTableDataCell>
                       <CTableDataCell>
                         <img
                           src={`/src/assets/images/iam/${user.image}.jpg`}
